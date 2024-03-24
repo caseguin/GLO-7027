@@ -6,3 +6,5 @@
 charles_workspace/Latex/Rapport1.tex
 charles_workspace/Latex/Rapport1.log
 *.png
+*.json
+*.safetensors
