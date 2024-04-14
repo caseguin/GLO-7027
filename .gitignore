@@ -9,3 +9,4 @@ charles_workspace/Latex/Rapport1.log
 *.json
 *.safetensors
 *.zip
+charles_workspace/randomForest.joblib
