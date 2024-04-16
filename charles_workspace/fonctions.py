@@ -1,36 +1,36 @@
-import concurrent.futures
-from transformers import pipeline
+import re
+import emoji
 
-def modiliserSujetDesArticles(titre_list, batch_size=10):
-    classifier = pipeline(model="facebook/bart-large-mnli")
-    result_list = []
+def findEmoji(text):
+    emojis = re.findall("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        u"\U00002500-\U00002BEF"  # chinese char
+        u"\U00002702-\U000027B0"
+        u"\U000024C2-\U0001F251"
+        u"\U0001f926-\U0001f937"
+        u"\U00010000-\U0010ffff"
+        u"\u2640-\u2642" 
+        u"\u2600-\u2B55"
+        u"\u200d"
+        u"\u23cf"
+        u"\u23e9"
+        u"\u231a"
+        u"\ufe0f"  # dingbats
+        u"\u3030"
+                      "]+", text)
+    return emojis
 
-    candidate_labels=[
-    "Environnement",
-    "Politique",
-    "COVID",
-    "Technologie",
-    "Économie",
-    "Justice",
-    "Éducation",
-    "Santé",
-    "Sport"
-    ]
+
+def emojiToText(text):
+    emojiInText = emoji.demojize(text)
+    emojiInText = emojiInText[1:-1]
+    return emojiInText
 
 
-    # Process texts in batches
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-
-        for i in range(0, len(titre_list), batch_size):
-            batch = titre_list[i:i + batch_size]
-            results = executor.map(classifier, batch, [candidate_labels]*len(batch))
-            for res in results:
-                try: 
-                    final_result = max(zip(res['scores'], res['labels']))[1]
-                    result_list.append(final_result)
-                except Exception as e:
-                    print('KeyError:', e)
-                    print('result :', res )
-                    pass
-
-    return result_list
+def normalizeCols(df, cols):
+    for col in cols:
+        df[col]=(df[col]-df[col].min())/(df[col].max()-df[col].min())
+    return df
